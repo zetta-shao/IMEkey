@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QCoreApplication>
+#include <QApplication>
 #include <QCloseEvent>
 #include <QGroupBox>
 #include <QLabel>
@@ -18,6 +19,7 @@
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include <QDebug>
 
 #ifdef WIN32
 #define WINVER _WIN32_WINNT_VISTA
