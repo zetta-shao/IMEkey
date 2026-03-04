@@ -17,17 +17,13 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QSystemTrayIcon>
-#include <QTimer>
-#include <QDebug>
+
 
 #ifdef WIN32
 #define WINVER _WIN32_WINNT_VISTA
-#undef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_WINNT_VISTA
 #include <windows.h>
 #include <winuser.h>
 #include <winnls.h>
-#include <sysinfoapi.h>
 #else
 #include <X11/XKBlib.h>
 #endif
@@ -60,16 +56,7 @@ public:
     void setVisible(bool visible) override;
     int getSystemKeyboardLayouts(int count, void *hkl);
     void hklToLocalName(int val, wchar_t *outwSTR, int strsize);
-    void createTimerGroupBox();
-    void setIME(int index);
-    void setTIMER(int index);
-    void createSysLangGroupBox();
-    void createTrayIcon();
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void idleTimeOut();
-    void checkSystemIdle(void);
-    void setIdleTimerVal(int32_t val);
-    void setTargetFCID(uint32_t FCID);
+    void createIconGroupBox();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -78,28 +65,19 @@ private slots:
     void showMessage();
     void messageClicked();
 
-Q_SIGNALS:
-    void SystemIdleTimeOut(void);
-
-public Q_SLOTS:
-    void activeIME(void);
-
 private:
+    void createSysLangGroupBox();
+    void createTrayIcon();
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
     Ui::IMEkey *ui;
-    QIcon qiconICON;
-
     uint32_t p_curHKL;
     uint32_t *p_aryHKL;
     uint32_t p_numHKL;
 
-    QGroupBox *qgbTIMER;
-    QLabel *qlTIMER;
-    QComboBox *qcbxTIMER;
-    int32_t p_Timer;
-    QTimer *p_qtiTimer;
-#ifdef WIN32
-    LASTINPUTINFO p_Timer_lpi;
-#endif
+    QGroupBox *qgbICON;
+    QLabel *qlICON;
+    QComboBox *qcbxICON;
+
     QGroupBox *messageGroupBox;
     QLabel *qlTitle;
     QLabel *qlBody;
@@ -110,6 +88,7 @@ private:
     QComboBox *qcbSysLang;
 
     QAction *minimizeAction;
+    QAction *maximizeAction;
     QAction *restoreAction;
     QAction *quitAction;
     QSystemTrayIcon *trayIcon;
