@@ -1,54 +1,18 @@
 #ifndef IMEKEY_H
 #define IMEKEY_H
 
-#include <QDialog>
-#include <QAction>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QCoreApplication>
-#include <QApplication>
-#include <QCloseEvent>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMenu>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QMessageBox>
-#include <QSystemTrayIcon>
-#include <QTimer>
-#include <QDebug>
+#include "common.h"
 
-#ifdef WIN32
-#define WINVER _WIN32_WINNT_VISTA
-#undef _WIN32_WINNT //mingw define is 0x502
-#define _WIN32_WINNT _WIN32_WINNT_VISTA
-#include <windows.h>
-#include <winuser.h>
-#include <winnls.h>
-#include <sysinfoapi.h>
-#else
-#include <X11/XKBlib.h>
-#endif
+class clsHKL;
 
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class IMEkey; }
-//class QAction;
-//class QCheckBox;
-//class QComboBox;
-//class QGroupBox;
-//class QLabel;
-//class QLineEdit;
-//class QMenu;
-//class QPushButton;
-//class QSpinBox;
-//class QTextEdit;
-QT_END_NAMESPACE
-
-#define array_hkl_size 32
+enum def_flags {
+    //os: low 3bit
+    flag_os_unknow = 0x0,
+    flag_os_win32 = 0x1,
+    flag_os_linux_tty = 0x2,
+    flag_os_linux_x11 = 0x3,
+    flag_os_linux_wayland = 0x4,
+};
 
 class IMEkey : public QDialog
 {
@@ -57,16 +21,14 @@ class IMEkey : public QDialog
 public:
     IMEkey(QWidget *parent = nullptr);
     ~IMEkey();
-
+    void initIMEkey(void); //in _impl_ file
     void setVisible(bool visible) override;
-    int getSystemKeyboardLayouts(int count, void *hkl);
-    void hklToLocalName(int val, wchar_t *outwSTR, int strsize);
     void createTimerGroupBox();
     void createSysLangGroupBox();
     void createTrayIcon();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void setIdleOut(int32_t val);
-    void setTgtLang(uint32_t FCID);
+    void setTgtLang(char *pSTR);
 
 public Q_SLOTS:
     void slt_CheckSystemIdle(void);
@@ -87,11 +49,8 @@ private slots:
 private:
     Ui::IMEkey *ui;
     QIcon qiconICON;
-    uint32_t p_curHKL;
-    uint32_t *p_aryHKL;
-    uint32_t p_numHKL;
-    LASTINPUTINFO p_TIMERlpi;
-
+    clsHKL *p_HKL;
+    uint32_t p_flags;
     QGroupBox *qgbTIMER;
     QLabel *qlTIMER;
     QComboBox *qcbxTIMER;

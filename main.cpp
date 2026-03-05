@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         if(!ptr) break;
         brk = strchr(ptr, '=');
         if(brk && strncmp("-time=", ptr, 6) == 0) { w.setIdleOut(strtol(brk + 1, NULL, 10)); }
-        if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(strtol(brk + 1, NULL, 16)); }
+        if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(brk+1); }
     }
 
     w.show();

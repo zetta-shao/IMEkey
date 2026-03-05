@@ -5,9 +5,7 @@ IMEkey::IMEkey(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::IMEkey)
 {
-    p_curHKL = 0x04090409;
-    p_aryHKL = nullptr;
-    p_numHKL = 0;
+    p_HKL = nullptr;
     qlTitle = nullptr;
     qlBody = nullptr;
     qlHotkey = nullptr;
@@ -20,9 +18,11 @@ IMEkey::IMEkey(QWidget *parent)
     quitAction = nullptr;
     trayIcon = nullptr;
     trayIconMenu = nullptr;
+    p_flags = 0;
     //ui->setupUi(this);
     qiconICON = QIcon(":/key.png");
-    p_TIMERlpi.cbSize = sizeof(LASTINPUTINFO);
+
+    initIMEkey(); //init. by platfrom
     createTimerGroupBox();
     createSysLangGroupBox();
     createTrayIcon();
@@ -48,56 +48,6 @@ IMEkey::IMEkey(QWidget *parent)
 }
 
 IMEkey::~IMEkey() { delete ui; }
-
-
-int IMEkey::getSystemKeyboardLayouts(int count, void *hkl) { (void)count; (void)hkl;
-#ifdef WIN32
-    if(count==0) return GetKeyboardLayoutList(0, nullptr);
-    return GetKeyboardLayoutList(count, (HKL*)hkl);
-#else
-    //XkbGetNames
-#endif
-}
-
-void IMEkey::hklToLocalName(int val, wchar_t *outwSTR, int strsize) { (void)val; (void)outwSTR; (void)strsize;
-#ifdef WIN32
-    val &= 0x7fff;
-    LCIDToLocaleName((LCID)val, (LPWSTR)outwSTR, strsize, 0);
-#else
-#endif
-}
-
-void IMEkey::createSysLangGroupBox() {
-    int res;
-    if(qgbSysLang!=nullptr) return;
-    this->qgbSysLang = new QGroupBox(tr("System_Languages") );
-    this->qlLang = new QLabel("target_lang:");
-    this->qcbxSysLang = new QComboBox;
-
-    res = getSystemKeyboardLayouts(0, nullptr);
-    if(res > array_hkl_size) { res = array_hkl_size; }
-    p_numHKL = res;
-    if(res > 0) {
-        int32_t i;
-        uint64_t *pqwHKL;
-        wchar_t wstr[64];        
-        pqwHKL = (uint64_t*)malloc(sizeof(uint64_t) * p_numHKL);
-        p_aryHKL = new uint32_t(p_numHKL);
-        res = getSystemKeyboardLayouts(p_numHKL, pqwHKL);
-        for(i=0; i<res; i++) {
-            p_aryHKL[i] = (uint32_t)(pqwHKL[i]);
-            hklToLocalName(p_aryHKL[i], wstr, 64);
-            this->qcbxSysLang->addItem(QString::fromWCharArray((const wchar_t*)wstr)); }
-        if(res == 0) { this->qcbxSysLang->addItem(QString("not sound") ); }
-        free(pqwHKL);
-    }
-    {
-        QHBoxLayout *langLayout = new QHBoxLayout;
-        langLayout->addWidget(this->qlLang);
-        langLayout->addWidget(this->qcbxSysLang);
-        this->qgbSysLang->setLayout(langLayout);
-    }
-}
 
 void IMEkey::createTrayIcon() {
     if(trayIconMenu!=nullptr) return;
@@ -189,7 +139,6 @@ void IMEkey::createTimerGroupBox() {
 }
 
 void IMEkey::slt_selIdleTimer(int idx) { p_nTIMER=qcbxTIMER->itemText(idx).toUInt(); }
-void IMEkey::slt_selTgtLang(int idx) { p_curHKL=p_aryHKL[idx]; }
 
 void IMEkey::setIdleOut(int32_t val) {
     int idx = qcbxTIMER->findData(val);
@@ -199,33 +148,3 @@ void IMEkey::setIdleOut(int32_t val) {
     qcbxTIMER->setCurrentIndex( qcbxTIMER->findData(val) );
 }
 
-void IMEkey::setTgtLang(uint32_t FCID) {
-    int idx = qcbxSysLang->count();
-    for(idx--; idx>0; idx--) {
-        if(FCID!=this->p_aryHKL[idx]) continue;
-        p_curHKL=p_aryHKL[idx];
-        qcbxSysLang->setCurrentIndex(idx+1);
-        break;
-    }
-}
-
-void IMEkey::slt_CheckSystemIdle(void) {
-#ifdef WIN32
-    uint64_t currentTime;
-    int32_t idleTime;
-    if(!GetLastInputInfo(&p_TIMERlpi)) return;
-    currentTime = GetTickCount64(); // 系統啟動至今的毫秒數
-    idleTime = (int32_t)(currentTime - p_TIMERlpi.dwTime); // 計算閒置了多久
-    if (idleTime < p_nTIMER) return;
-    else { emit sig_SystemIdleTimeout(); }
-#endif
-}
-
-void IMEkey::slt_ChangeKeyboardLayout(void) {
-#ifdef WIN32
-    HWND hwnd = GetForegroundWindow();
-    HKL chkl = (HKL)(uint64_t)p_curHKL;
-    if(!hwnd) return;
-    PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, (LPARAM)chkl);
-#endif
-}

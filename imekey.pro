@@ -9,11 +9,16 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    imekey_impl_lnx.cpp \
+    imekey_impl_win32.cpp \
     main.cpp \
     imekey.cpp
 
 HEADERS += \
-    imekey.h
+    common.h \
+    imekey.h \
+    imekey_impl_lnx.h \
+    imekey_impl_win32.h
 
 FORMS += \
     imekey.ui
