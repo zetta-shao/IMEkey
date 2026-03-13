@@ -9,7 +9,6 @@ void printhelp(char* argv0) { (void)argv0;
 
 int main(int argc, char *argv[]) {
     Q_INIT_RESOURCE(imekey);
-    int i;
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QApplication a(argc, argv);
@@ -23,6 +22,8 @@ int main(int argc, char *argv[]) {
     QApplication::setQuitOnLastWindowClosed(false);
 
     IMEkey w;
+#if 0
+    int i;
     printhelp(*argv);
     for(i=0; i<argc; i++) {
         char* ptr = argv[i];
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]) {
         if(brk && strncmp("-time=", ptr, 6) == 0) { w.setIdleOut(strtol(brk + 1, NULL, 10)); }
         if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(brk+1); }
     }
-
+#endif
     w.show();
     return a.exec();
 }

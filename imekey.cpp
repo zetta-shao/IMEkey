@@ -39,7 +39,6 @@ IMEkey::IMEkey(QWidget *parent)
     mainLayout->addWidget(qgbTIMER);
     mainLayout->addWidget(qgbSysLang);
     setLayout(mainLayout);
-    qcbxSysLang->setCurrentIndex( qcbxSysLang->findText("en-US") );
     qcbxTIMER->setCurrentIndex( qcbxTIMER->findText("3000") );
     trayIcon->show();
     setWindowTitle(tr("IMEkey"));

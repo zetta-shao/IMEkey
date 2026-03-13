@@ -3,8 +3,7 @@
 #if defined(Q_OS_WIN32)||defined(Q_OS_WIN64)
 #include "imekey_impl_win32.h"
 
-clsHKL::clsHKL(void) {
-}
+clsHKL::clsHKL(void) { }
 
 void IMEkey::initIMEkey(void) {
     p_HKL = new clsHKL();
@@ -40,11 +39,13 @@ void IMEkey::createSysLangGroupBox() {
         langLayout->addWidget(this->qcbxSysLang);
         this->qgbSysLang->setLayout(langLayout);
     }
-    p_HKL->curHKL = p_HKL->aryHKL[0];
-    p_HKL->numHKL = num;
+    i = qcbxSysLang->findText("en-US");
+    if(i >= 0) {
+        p_HKL->curHKL = p_HKL->aryHKL[i];
+        qcbxSysLang->setCurrentIndex(i); }
 }
 
-void IMEkey::slt_selTgtLang(int idx) { p_HKL->curHKL = p_HKL->aryHKL[idx]; }
+void IMEkey::slt_selTgtLang(int idx) { if(idx<0) return; p_HKL->curHKL = p_HKL->aryHKL[idx]; }
 
 void IMEkey::slt_CheckSystemIdle(void) {
     uint64_t currentTime;

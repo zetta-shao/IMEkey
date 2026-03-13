@@ -5,15 +5,6 @@
 
 class clsHKL;
 
-enum def_flags {
-    //os: low 3bit
-    flag_os_unknow = 0x0,
-    flag_os_win32 = 0x1,
-    flag_os_linux_tty = 0x2,
-    flag_os_linux_x11 = 0x3,
-    flag_os_linux_wayland = 0x4,
-};
-
 class IMEkey : public QDialog
 {
     Q_OBJECT

@@ -38,4 +38,17 @@ QT_END_NAMESPACE
 
 #define array_hkl_size 32
 
+enum def_flags {
+    //os: low 3bit
+    flag_os_unknow = 0x0,
+    flag_os_win32 = 0x1,
+    flag_os_linux_tty = 0x2,
+    flag_os_linux_x11 = 0x3,
+    flag_os_linux_wayland = 0x4,
+};
+
+enum def_flag_mask {
+    flag_os_mask = 0x7,
+};
+
 #endif // COMMON_H
