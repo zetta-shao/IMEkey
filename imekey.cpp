@@ -28,6 +28,7 @@ IMEkey::IMEkey(QWidget *parent)
     createTrayIcon();
     trayIcon->setIcon(qiconICON);
     setWindowIcon(qiconICON);
+    trayIcon->setToolTip("IMEkey");
     connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &IMEkey::messageClicked);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &IMEkey::iconActivated);
     connect(qcbxTIMER, QOverload<int>::of(&QComboBox::currentIndexChanged),this,&IMEkey::slt_selIdleTimer);
@@ -39,14 +40,14 @@ IMEkey::IMEkey(QWidget *parent)
     mainLayout->addWidget(qgbTIMER);
     mainLayout->addWidget(qgbSysLang);
     setLayout(mainLayout);
-    qcbxTIMER->setCurrentIndex( qcbxTIMER->findText("3000") );
+    qcbxTIMER->setCurrentIndex( qcbxTIMER->findText("3") );
     trayIcon->show();
     setWindowTitle(tr("IMEkey"));
-    resize(300,150);
+    resize(300,150);    
     qtTIMER.start();
 }
 
-IMEkey::~IMEkey() { delete ui; }
+IMEkey::~IMEkey() { writeSetting(); delete ui; }
 
 void IMEkey::createTrayIcon() {
     if(trayIconMenu!=nullptr) return;
@@ -69,16 +70,36 @@ void IMEkey::createTrayIcon() {
     trayIcon->setContextMenu(trayIconMenu);
 }
 
+void IMEkey::readSetting(void) {
+    QSettings pSet(QSettings::IniFormat, QSettings::UserScope, "IDEA software", "IMEkey");
+    pSet.beginGroup("main");
+    if(pSet.value("timeout").isValid()) {
+        setIdleOut( pSet.value("timeout").toInt() );
+    }
+    if(pSet.value("tgtLang").isValid()) {
+        setTgtLang( pSet.value("tgtLang").toString().toStdString().c_str() );
+    }
+    pSet.endGroup();
+}
+
+void IMEkey::writeSetting(void) {
+    QSettings pSet(QSettings::IniFormat, QSettings::UserScope, "IDEA software", "IMEkey");
+    pSet.beginGroup("main");
+    pSet.setValue("timeout", p_nTIMER );
+    pSet.setValue("tgtLang", qcbxSysLang->currentText() );
+    pSet.endGroup();
+}
+
 void IMEkey::messageClicked() {
     QMessageBox::information(nullptr, tr("Systray"), tr("just a switch")); }
 
 void IMEkey::closeEvent(QCloseEvent *event) {
     if (trayIcon->isVisible()) {
-        QMessageBox::information(this, tr("Systray"),
-                                 tr("The program will keep running in the "
-                                    "system tray. To terminate the program, "
-                                    "choose <b>Quit</b> in the context menu "
-                                    "of the system tray entry."));
+        //QMessageBox::information(this, tr("Systray"),
+        //                         tr("The program will keep running in the "
+        //                            "system tray. To terminate the program, "
+        //                            "choose <b>Quit</b> in the context menu "
+        //                            "of the system tray entry."));
         hide();
         event->ignore();
     }
@@ -97,7 +118,7 @@ void IMEkey::showMessage() {
     //    trayIcon->showMessage(titleEdit->text(), bodyEdit->toPlainText(), msgIcon,
     //                      durationSpinBox->value() * 1000);
     //}
-    trayIcon->showMessage(qlTitle->text(), qlBody->text(), qiconICON, 1000);
+    trayIcon->showMessage("IMEkey", "IMEkey", qiconICON, 1000);
 }
 
 void IMEkey::setVisible(bool visible) {
@@ -110,11 +131,10 @@ void IMEkey::iconActivated(QSystemTrayIcon::ActivationReason reason) { //action 
     switch (reason) {
     case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
-        //iconComboBox->setCurrentIndex((iconComboBox->currentIndex() + 1) % iconComboBox->count());
-        break;
     case QSystemTrayIcon::MiddleClick:
-        showMessage();
-        break;
+        { //showMessage();
+        trayIcon->contextMenu()->popup(QCursor::pos());
+        break; }
     default:
         ;
     }
@@ -125,11 +145,12 @@ void IMEkey::createTimerGroupBox() {
     qlTIMER = new QLabel("idle tile(mS):");
     qcbxTIMER = new QComboBox;
 
-    qcbxTIMER->addItem(tr("1000"));
-    qcbxTIMER->addItem(tr("2000"));
+    qcbxTIMER->addItem(tr("1500"));
     qcbxTIMER->addItem(tr("3000"));
-    qcbxTIMER->addItem(tr("4000"));
     qcbxTIMER->addItem(tr("5000"));
+    qcbxTIMER->addItem(tr("7000"));
+    qcbxTIMER->addItem(tr("10000"));
+    qcbxTIMER->addItem(tr("15000"));
 
     QHBoxLayout *timerLayout = new QHBoxLayout;
     timerLayout->addWidget(qlTIMER);
@@ -140,10 +161,11 @@ void IMEkey::createTimerGroupBox() {
 void IMEkey::slt_selIdleTimer(int idx) { p_nTIMER=qcbxTIMER->itemText(idx).toUInt(); }
 
 void IMEkey::setIdleOut(int32_t val) {
-    int idx = qcbxTIMER->findData(val);
+    QString str = QString::number(val, 10);
+    int idx = qcbxTIMER->findText( str );
     if(idx != -1) {
         p_nTIMER = val; qcbxTIMER->setCurrentIndex(idx); return; }
-    qcbxTIMER->addItem(QString::number(val, 10));
-    qcbxTIMER->setCurrentIndex( qcbxTIMER->findData(val) );
+    qcbxTIMER->addItem( str );
+    qcbxTIMER->setCurrentIndex( qcbxTIMER->findText( str ) );
 }
 

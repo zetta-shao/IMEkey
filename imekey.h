@@ -19,7 +19,9 @@ public:
     void createTrayIcon();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void setIdleOut(int32_t val);
-    void setTgtLang(char *pSTR);
+    void setTgtLang(QString lang);
+    void readSetting(void);
+    void writeSetting(void);
 
 public Q_SLOTS:
     void slt_CheckSystemIdle(void);
@@ -62,6 +64,5 @@ private:
     QAction *quitAction;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
-
 };
 #endif // IMEKEY_H

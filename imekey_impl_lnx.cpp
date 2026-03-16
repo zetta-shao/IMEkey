@@ -132,15 +132,20 @@ void IMEkey::slt_ChangeKeyboardLayout(void) {
     }
 }
 
-void IMEkey::setTgtLang(char *pSTR) {
-    int idx = p_HKL->numHKL;
-    QString qSTR(pSTR);
-    for(idx--; idx>0; idx--) {
-        if(qSTR.compare(p_HKL->aryHKL[idx]) != 0) continue;
-        p_HKL->curHKL=p_HKL->aryHKL[idx];
-        qcbxSysLang->setCurrentIndex(idx+1);
-        break;
-    }
+void IMEkey::setTgtLang(QString lang) {
+    //int idx = p_HKL->numHKL;
+    //QString qSTR(pSTR);
+    //for(idx--; idx>0; idx--) {
+    //    if(qSTR.compare(p_HKL->aryHKL[idx]) != 0) continue;
+    //    p_HKL->curHKL=p_HKL->aryHKL[idx];
+    //    qcbxSysLang->setCurrentIndex(idx+1);
+    //    break;
+    //}
+    int idx = qcbxSysLang->findText(lang);
+    if(idx < 0 ) return;
+    p_HKL->curHKL = p_HKL->aryHKL[idx];
+    qcbxSysLang->setCurrentIndex(idx); return;
+
 }
 
 #endif

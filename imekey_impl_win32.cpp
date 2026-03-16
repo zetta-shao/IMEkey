@@ -39,10 +39,10 @@ void IMEkey::createSysLangGroupBox() {
         langLayout->addWidget(this->qcbxSysLang);
         this->qgbSysLang->setLayout(langLayout);
     }
-    i = qcbxSysLang->findText("en-US");
-    if(i >= 0) {
-        p_HKL->curHKL = p_HKL->aryHKL[i];
-        qcbxSysLang->setCurrentIndex(i); }
+    res = qcbxSysLang->findText("en-US");
+    if(res >= 0) {
+        p_HKL->curHKL = p_HKL->aryHKL[res];
+        qcbxSysLang->setCurrentIndex(res); }
 }
 
 void IMEkey::slt_selTgtLang(int idx) { if(idx<0) return; p_HKL->curHKL = p_HKL->aryHKL[idx]; }
@@ -64,15 +64,19 @@ void IMEkey::slt_ChangeKeyboardLayout(void) {
     PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, (LPARAM)chkl);
 }
 
-void IMEkey::setTgtLang(char *pSTR) {
-    int idx = p_HKL->numHKL;
-    uint32_t kbid = strtol(pSTR, NULL, 16);
-    for(idx--; idx>0; idx--) {
-        if(kbid != p_HKL->aryHKL[idx] ) continue;
-        p_HKL->curHKL=p_HKL->aryHKL[idx];
-        qcbxSysLang->setCurrentIndex(idx+1);
-        break;
-    }
+void IMEkey::setTgtLang(QString lang) {
+    //int idx = p_HKL->numHKL;
+    //uint32_t kbid = strtol(pSTR, NULL, 16);
+    //for(idx--; idx>0; idx--) {
+    //    if(kbid != p_HKL->aryHKL[idx] ) continue;
+    //    p_HKL->curHKL=p_HKL->aryHKL[idx];
+    //    qcbxSysLang->setCurrentIndex(idx+1);
+    //    break;
+    //}
+    int idx = qcbxSysLang->findText(lang);
+    if(idx < 0 ) return;
+    p_HKL->curHKL = p_HKL->aryHKL[idx];
+    qcbxSysLang->setCurrentIndex(idx); return;
 }
 
 #endif

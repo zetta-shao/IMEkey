@@ -10,8 +10,10 @@ void printhelp(char* argv0) { (void)argv0;
 int main(int argc, char *argv[]) {
     Q_INIT_RESOURCE(imekey);
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    int hide = 0;
 
     QApplication a(argc, argv);
+    IMEkey w;
 
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
         QMessageBox::critical(nullptr, QObject::tr("Systray"),
@@ -21,19 +23,20 @@ int main(int argc, char *argv[]) {
     }
     QApplication::setQuitOnLastWindowClosed(false);
 
-    IMEkey w;
-#if 0
+    w.readSetting();
+#if 1
     int i;
-    printhelp(*argv);
+    //printhelp(*argv);
     for(i=0; i<argc; i++) {
         char* ptr = argv[i];
         char* brk = NULL;
         if(!ptr) break;
         brk = strchr(ptr, '=');
         if(brk && strncmp("-time=", ptr, 6) == 0) { w.setIdleOut(strtol(brk + 1, NULL, 10)); }
-        if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(brk+1); }
+        //if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(brk+1); }
+        if(brk && strncmp("-hide", ptr, 5) == 0) { hide=1; }
     }
 #endif
-    w.show();
+    if(hide == 0) w.show(); else w.hide();
     return a.exec();
 }

@@ -20,6 +20,7 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QDebug>
+#include <QSettings>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
