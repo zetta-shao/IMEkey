@@ -40,7 +40,7 @@ IMEkey::IMEkey(QWidget *parent)
     mainLayout->addWidget(qgbTIMER);
     mainLayout->addWidget(qgbSysLang);
     setLayout(mainLayout);
-    qcbxTIMER->setCurrentIndex( qcbxTIMER->findText("3") );
+    qcbxTIMER->setCurrentIndex( qcbxTIMER->findText("3000") );
     trayIcon->show();
     setWindowTitle(tr("IMEkey"));
     resize(300,150);    
@@ -77,7 +77,7 @@ void IMEkey::readSetting(void) {
         setIdleOut( pSet.value("timeout").toInt() );
     }
     if(pSet.value("tgtLang").isValid()) {
-        setTgtLang( pSet.value("tgtLang").toString().toStdString().c_str() );
+        setTgtLang( pSet.value("tgtLang").toString() );
     }
     pSet.endGroup();
 }

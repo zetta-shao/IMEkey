@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         brk = strchr(ptr, '=');
         if(brk && strncmp("-time=", ptr, 6) == 0) { w.setIdleOut(strtol(brk + 1, NULL, 10)); }
         //if(brk && strncmp("-lang=", ptr, 6) == 0) { w.setTgtLang(brk+1); }
-        if(brk && strncmp("-hide", ptr, 5) == 0) { hide=1; }
+        if(strncmp("-hide", ptr, 5) == 0) { hide=1; }
     }
 #endif
     if(hide == 0) w.show(); else w.hide();
